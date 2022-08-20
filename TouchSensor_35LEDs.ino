@@ -144,6 +144,14 @@ void loop() {
   mccvi_current_b_stat = mccvi_mpr121readreg16(MCCVI_MPR121_B_ADD, 0x00);
   mccvi_current_c_stat = mccvi_mpr121readreg16(MCCVI_MPR121_C_ADD, 0x00);
   mccvi_nowtime = millis();
+  for(byte y = 0; y < 35; y++){
+    if(MCCVI_LEDs_Timers[y] != 0){
+      if(mccvi_nowtime - MCCVI_LEDs_Timers[y] > 3000){
+        digitalWrite(MCCVI_LEDs[y], LOW);
+        MCCVI_LEDs_Timers[y] = 0;
+      }
+    }
+  }
   for(byte y = 0; y < 12; y++){
     if ((mccvi_current_a_stat & _BV(y)) && !(mccvi_last_a_stat & _BV(y)) ){ //a touched
       digitalWrite(MCCVI_LEDs[y], HIGH);
@@ -166,15 +174,6 @@ void loop() {
       if(y < 11){ //lack 36s LED
         MCCVI_LEDs_Timers[y+24] = millis();
       }
-    }
-    if(mccvi_nowtime - MCCVI_LEDs_Timers[y] > 3000){
-      digitalWrite(MCCVI_LEDs[y], LOW);
-    }
-    if(mccvi_nowtime - MCCVI_LEDs_Timers[y+12] > 3000){
-      digitalWrite(MCCVI_LEDs[y+12], LOW);
-    }
-    if(mccvi_nowtime - MCCVI_LEDs_Timers[y+24] > 3000){
-      digitalWrite(MCCVI_LEDs[y+24], LOW);
     }
   }
   mccvi_last_a_stat = mccvi_current_a_stat;
